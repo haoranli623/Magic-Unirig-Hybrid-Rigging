@@ -4,22 +4,41 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Python
+# Python / tooling
 __pycache__/
 *.py[cod]
 *.so
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.hypothesis/
 
-# Local env / caches
+# Virtual env / local config
+.env
+.env.*
+.venv/
+venv/
+env/
+ENV/
+.python-version
+.gitconfig
+
+# Local caches / package targets
 .cache/
 .hf_cache/
 .pkg/
 .pkg_torch_backup/
-.gitconfig
 
-# Data / generated artifacts
+# Build / packaging
+build/
+dist/
+*.egg-info/
+
+# Data / model / generated media artifacts
 *.hdf5
 *.ckpt
 *.pth
