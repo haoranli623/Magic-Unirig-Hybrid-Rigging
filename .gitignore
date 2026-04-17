@@ -1,0 +1,52 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local env / caches
+.cache/
+.hf_cache/
+.pkg/
+.pkg_torch_backup/
+.gitconfig
+
+# Data / generated artifacts
+*.hdf5
+*.ckpt
+*.pth
+*.pt
+*.bin
+*.npz
+*.npy
+*.obj
+*.fbx
+*.ply
+*.glb
+*.png
+*.jpg
+*.jpeg
+*.mp4
+*.gif
+*.csv
+*.log
+*.tmp
+
+# Project outputs and temporary run products
+outputs/
+
+# Heavy third-party clones/checkpoints
+third_party/
+
+# Reports: keep markdown only, ignore heavy generated files
+reports/*.pdf
+reports/*.txt
+reports/hdf5_structure.txt

@@ -1,0 +1,48 @@
+# Progress
+
+- Stage 0: Initialized standalone reproduction project and report files.
+- Stage 1: Implemented and executed DT4D HDF5 inspection; generated `reports/hdf5_structure.txt` and `reports/hdf5_summary.md`.
+- Stage 1: Implemented DT4D preparation (`src/dataset.py`, `scripts/prepare_dt4d.py`) and exported canonical meshes/metadata for a 4-sample sanity set.
+- Stage 2: Cloned official public MagicArticulate repository into `third_party/MagicArticulate` and initialized submodules.
+- Stage 2: Downloaded official public checkpoints via MagicArticulate `download.py`.
+- Stage 2: Resolved runtime blockers (NumPy ABI mismatch, flash-attn dependency, GPU visibility outside sandbox) and executed real `demo.py` inference.
+- Stage 2: Added conversion layer (`src/rig_format.py`, `src/magic_runner.py`) and produced normalized rig outputs (`rig.json`, `weights.npy`, `raw_magic_output/`) for 2 DT4D samples.
+- Stage 3: Implemented rig-conditioned LBS forward model (`src/lbs.py`) and per-sequence transform optimization (`src/optimizer.py`) with root + per-bone local transforms.
+- Stage 3: Ran optimization sanity checks on one train-reconstruction pair and one cross-motion pair.
+- Stage 4: Implemented protocol/task builder (`src/protocol.py`) and full evaluator (`scripts/run_eval.py`) for training reconstruction + cross-motion.
+- Stage 5: Implemented metrics (`src/metrics.py`) including CD-L1/CD-L2 and optional vertex L2; generated table-style report.
+- Stage 6: Wrote reporting artifacts: `reports/protocol.md`, `reports/reproduction_notes.md`, `reports/deviations_from_paper.md`, `reports/magicarticulate_integration.md`.
+- Stage 7: Added runnable CLI commands and README documentation.
+- Stage 8: Completed sanity-first execution sequence end-to-end and saved outputs under `outputs/` and `reports/`.
+- Stage 9: Added minimal visualization pipeline (`scripts/render_visualizations.py`, `src/visualization.py`) and generated presentation assets for one real cross-motion task under `outputs/visualizations/`.
+- Stage 10: Switched default pipeline to hybrid route (Magic skeleton + UniRig-style weight remap + Adam fitting).
+- Stage 10: Added `src/weight_transfer.py` and integrated weight-transfer reports into rig outputs.
+- Stage 10: Added `src/fit_adam.py` and made Adam backend default in `scripts/run_optimize.py` and `scripts/run_eval.py`.
+- Stage 10: Added per-task diagnostics (`fit_config.json`, `loss_trace.json`, `fit_frame_summary.json`, `motion_params_adam.npz`) and extended `results.csv` fields.
+- Stage 10: Extended visualization script to render `loss_curve.png` from optimization traces.
+- Stage 10: Sanity-validated conversion-only weight transfer on `bear84Q/bear84Q_Rotate90L` and verified normalized rows in `weights.npy`.
+- Stage 10: Sanity-validated Adam train/cross eval runs and generated required per-task artifacts.
+- Stage 10: Sanity-validated legacy `scipy_legacy` backend still runs as optional fallback.
+- Stage 10: Added artifact reset in eval/optimize scripts to prevent stale backend files mixing in per-task outputs.
+- Stage 11: Integrated UniRig learned-skin bridge (`src/unirig_skin_bridge.py`) with direct sampled-skin artifact capture (`predict_skin.npz`) and transfer diagnostics.
+- Stage 11: Added bridge runner `scripts/run_unirig_skin_predict_minimal.py` to avoid Blender (`bpy`) dependency in benchmark path.
+- Stage 11: Added local compatibility shims `shims/torch_scatter` and `shims/torch_cluster` for missing UniRig runtime ops in this environment.
+- Stage 11: Updated default rigging path to `weight_method=unirig_learned_skin` with optional fallback to legacy heuristic path.
+- Stage 11: Re-ran Magic+UniRig learned-skin rig conversion successfully for:
+  - `huskydog3T/huskydog3T_Actions2`
+  - `bearVGG/bearVGG_Actions0`
+- Stage 11: Completed explicit sanity fits using learned-skin rig (`n_iters=80`, `vertex_sample_count=800`):
+  - train reconstruction: `bearVGG_Actions0 -> bearVGG_Actions0`
+  - cross motion: `bearVGG_Actions0 -> bearVGG_Turn3`
+- Stage 11: Saved explicit sanity metrics at `outputs/eval/sanity_unirigskin_explicit/results.json`.
+- Stage 11: Launched staged larger run (`20` all-val-target cross tasks, Adam fast config) in tmux session `magic_stage1_unirigskin`.
+- Stage 12: Investigated huskydog vertex mismatch and traced cause to OBJ I/O vertex dropping in `src/mesh_utils.py` (`trimesh.load_mesh` path); canonical OBJ had 17305 vertices while weights were previously built on 17304.
+- Stage 12: Replaced OBJ read/write in `src/mesh_utils.py` with strict index-preserving parser/writer to keep exact vertex counts and face indices.
+- Stage 12: Rebuilt husky rig conversion; verified `weights.npy` now matches source vertex count `(17305, 41)` and husky optimization tasks run end-to-end.
+- Stage 12: Ran husky validation tasks under hybrid settings (`n_iters=60`, `vertex_sample_count=600`):
+  - train_recon: `huskydog3T_Actions2 -> huskydog3T_Actions2`
+  - cross_motion: `huskydog3T_Actions2 -> huskydog3T_Actions5`
+- Stage 12: Ran larger staged benchmark with learned-skin-only source filtering in isolated output root `outputs/staged_runs/staged_hybrid_20260417_010217_80tasks`:
+  - attempted=80 (11 train_recon + 69 cross_motion)
+  - succeeded=80, failed=0, skipped=0
+  - median runtime=7.47s/task

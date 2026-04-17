@@ -1,0 +1,28 @@
+mode: predict
+debug: False
+experiment_name: magic_bridge_unirig_skin
+resume_from_checkpoint: experiments/skin/articulation-xl/model.ckpt
+
+components:
+  data: quick_inference
+  transform: inference_skin_transform
+  model: unirig_skin
+  system: skin
+  data_name: predict_skeleton.npz
+
+writer:
+  __target__: skin
+  output_dir: results
+  add_num: False
+  repeat: 1
+  save_name: predict
+  export_npz: predict_skin
+  export_fbx: ~
+
+trainer:
+  num_nodes: 1
+  devices: 1
+  precision: bf16-mixed
+  accelerator: gpu
+  strategy: auto
+  inference_mode: True
